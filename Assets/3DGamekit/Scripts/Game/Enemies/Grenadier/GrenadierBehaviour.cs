@@ -69,8 +69,7 @@ namespace Gamekit3D
         protected float m_ShieldActivationTime;
 
 
-        //nave
-        public GameObject shuttleToSpawn;
+      
 
         void OnEnable()
         {
@@ -140,14 +139,7 @@ namespace Gamekit3D
         {
             deathAudioPlayer.PlayRandomClip();
             m_EnemyController.animator.SetTrigger(hashDeathParam);
-            if (shuttleToSpawn != null)
-            {
-                // Activa el objeto de la nave, haciéndolo visible.
-                shuttleToSpawn.SetActive(true);
-                // NOTA: Si quieres que la nave aterrice, su script de movimiento 
-                // debe empezar a moverse al ser activado.
-            }
-            Destroy(gameObject);
+           
         }
 
         public void ActivateShield()
