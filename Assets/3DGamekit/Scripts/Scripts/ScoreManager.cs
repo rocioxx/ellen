@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using TMPro; // Asegúrate de tener esta librería si usas TextMeshPro
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ScoreManager : MonoBehaviour
 
     private int currentScore = 0;
 
+
     private void Awake()
     {
         // Implementación del Singleton
@@ -18,7 +20,8 @@ public class ScoreManager : MonoBehaviour
         {
             Instance = this;
             // Opcional: para que persista entre escenas
-            // DontDestroyOnLoad(gameObject); 
+            DontDestroyOnLoad(gameObject);
+          
         }
         else
         {
@@ -29,6 +32,10 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreText();
     }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        UpdateScoreText();
+    }
     /// <summary>
     /// Añade puntos a la puntuación actual.
     /// </summary>
