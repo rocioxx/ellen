@@ -1,43 +1,41 @@
 ﻿using UnityEngine;
-using TMPro; // Necesario para usar TextMeshPro
+using TMPro;
 
-public class ScoreUI : MonoBehaviour
+namespace Gamekit3D
 {
-    private TextMeshProUGUI scoreText;
-
-    void Start()
+    public class ScoreUI : MonoBehaviour
     {
-        // Obtiene el componente de texto.
-        scoreText = GetComponent<TextMeshProUGUI>();
+        private TextMeshProUGUI scoreText;
 
-        // Muestra la puntuación que ya trae el Manager al inicio de la escena.
-        if (ScoreManager.instance != null)
+        void Start()
         {
-            UpdateScore(ScoreManager.instance.currentScore);
+            scoreText = GetComponent<TextMeshProUGUI>();
+            if (ScoreManager.instance != null)
+            {
+                UpdateScore(ScoreManager.instance.currentScore);
+            }
         }
-    }
 
-    void OnEnable()
-    {
-        // Se suscribe al evento: cuando el Manager añade puntos, llama a UpdateScore.
-        if (ScoreManager.instance != null)
+        void OnEnable()
         {
-            ScoreManager.instance.onScoreChange += UpdateScore;
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.onScoreChange += UpdateScore;
+            }
         }
-    }
 
-    void OnDisable()
-    {
-        // Desuscripción obligatoria para evitar errores.
-        if (ScoreManager.instance != null)
+        void OnDisable()
         {
-            ScoreManager.instance.onScoreChange -= UpdateScore;
+            if (ScoreManager.instance != null)
+            {
+                ScoreManager.instance.onScoreChange -= UpdateScore;
+            }
         }
-    }
 
-    // Este método actualiza el texto en pantalla.
-    void UpdateScore(int newScore)
-    {
-        scoreText.text = "Puntuación: " + newScore;
+        void UpdateScore(int newScore)
+        {
+            if (scoreText != null)
+                scoreText.text = "Puntuación: " + newScore;
+        }
     }
 }
