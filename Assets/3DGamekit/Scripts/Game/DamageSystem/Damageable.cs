@@ -14,6 +14,12 @@ namespace Gamekit3D
         [Tooltip("Time that this gameObject is invulnerable for, after receiving damage.")]
         public float invulnerabiltyTime;
 
+        // =========================================================================
+        // >> MODIFICACIÓN 1: Añadir la variable de puntuación
+        [Header("Puntuación")]
+        [Tooltip("Puntos que este objeto da al ser destruido.")]
+        public int scoreValue = 50;
+        // =========================================================================
 
         [Tooltip("The angle from the which that damageable is hitable. Always in the world XZ plane, with the forward being rotate by hitForwardRoation")]
         [Range(0.0f, 360.0f)]
@@ -73,7 +79,7 @@ namespace Gamekit3D
         public void ApplyDamage(DamageMessage data)
         {
             if (currentHitPoints <= 0)
-            {//ignore damage if already dead. TODO : may have to change that if we want to detect hit on death...
+            {
                 return;
             }
 
@@ -86,7 +92,6 @@ namespace Gamekit3D
             Vector3 forward = transform.forward;
             forward = Quaternion.AngleAxis(hitForwardRotation, transform.up) * forward;
 
-            //we project the direction to damager to the plane formed by the direction of damage
             Vector3 positionToDamager = data.damageSource - transform.position;
             positionToDamager -= transform.up * Vector3.Dot(transform.up, positionToDamager);
 
@@ -97,7 +102,16 @@ namespace Gamekit3D
             currentHitPoints -= data.amount;
 
             if (currentHitPoints <= 0)
-                schedule += OnDeath.Invoke; //This avoid race condition when objects kill each other.
+            {
+                // =========================================================================
+                // >> MODIFICACIÓN 2: Llama al ScoreManager si la vida es <= 0
+                if (ScoreManager.instance != null)
+                {
+                    ScoreManager.instance.AddScore(scoreValue);
+                }
+                // =========================================================================
+                schedule += OnDeath.Invoke; // Evita condiciones de carrera al destruir
+            }
             else
                 OnReceiveDamage.Invoke();
 
@@ -139,5 +153,4 @@ namespace Gamekit3D
         }
 #endif
     }
-
 }
