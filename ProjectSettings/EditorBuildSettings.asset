@@ -35,5 +35,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/3DGamekit/Scenes/Escena5.unity
     guid: 902d3bc82f50f4e4c9faea785ff7cefb
+  - enabled: 1
+    path: Assets/3DGamekit/Scenes/EscenaFinal.unity
+    guid: a37c62d890e2e054a96e8e732a659da1
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

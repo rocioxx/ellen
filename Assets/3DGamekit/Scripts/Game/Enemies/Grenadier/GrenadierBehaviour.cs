@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System.Collections; // 🚨 ¡Añadido para usar Corrutinas!
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 namespace Gamekit3D
 {
@@ -57,6 +58,11 @@ namespace Gamekit3D
         public RandomAudioPlayer throwAudioPlayer;
         public RandomAudioPlayer punchAudioPlayer;
 
+        // 🚨 NUEVA VARIABLE: Duración de la espera antes de cargar la escena
+        [Header("Victoria")]
+        public float deathAnimationDuration = 3.0f;
+        public string winSceneName = "EscenaFinal"; // Ya estaba
+
         protected PlayerController m_Target;
         //used to store the position of the target when the Grenadier decide to shoot, so if the player
         //move between the start of the animation and the actual grenade launch, it shoot were it was not where it is now
@@ -69,7 +75,57 @@ namespace Gamekit3D
         protected float m_ShieldActivationTime;
 
 
-      
+        // ------------------------------------------------------------------------------------------------
+        // MÉTODO DIE MODIFICADO
+        // ------------------------------------------------------------------------------------------------
+
+        public void Die()
+        {
+            // 1. Acciones Inmediatas (Audio y Animación)
+            if (deathAudioPlayer != null)
+            {
+                deathAudioPlayer.PlayRandomClip();
+            }
+            m_EnemyController.animator.SetTrigger(hashDeathParam);
+
+            // Opcional: Deshabilitar lógica y navegación para que el bicho se congele
+            m_NavMeshAgent.isStopped = true;
+            m_EnemyController.enabled = false;
+
+            // 2. Efecto de "Romperse" (Desactivar Renderers)
+            // Esto hace que el modelo desaparezca inmediatamente después de iniciar la animación.
+            Renderer[] renderers = GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+            {
+                r.enabled = false;
+            }
+
+            Debug.Log("¡Granadero Derrotado! Iniciando Corrutina de Espera.");
+
+            // 3. Llama a la Corrutina que espera 'deathAnimationDuration' segundos.
+            StartCoroutine(LoadWinSceneAfterDelay());
+        }
+
+        // ------------------------------------------------------------------------------------------------
+        // NUEVA CORRUTINA
+        // ------------------------------------------------------------------------------------------------
+
+        IEnumerator LoadWinSceneAfterDelay()
+        {
+            // Pausa la ejecución del código por la duración de la animación.
+            yield return new WaitForSeconds(deathAnimationDuration);
+
+            // Una vez terminada la espera, se carga la escena de victoria.
+            Debug.Log("Tiempo de espera terminado. Cargando escena de victoria: " + winSceneName);
+            SceneManager.LoadScene(winSceneName);
+
+            // Destruye el GameObject del granadero.
+            Destroy(gameObject);
+        }
+
+        // ------------------------------------------------------------------------------------------------
+        // RESTO DEL CÓDIGO (Sin Cambios)
+        // ------------------------------------------------------------------------------------------------
 
         void OnEnable()
         {
@@ -135,13 +191,6 @@ namespace Gamekit3D
             m_CoreMaterial.SetColor("_Color2", Color.red);
         }
 
-        public void Die()
-        {
-            deathAudioPlayer.PlayRandomClip();
-            m_EnemyController.animator.SetTrigger(hashDeathParam);
-           
-        }
-
         public void ActivateShield()
         {
             shield.SetActive(true);
@@ -196,7 +245,7 @@ namespace Gamekit3D
                 transform.forward = v.normalized;
                 // if the player was above the player we return false to tell the Idle state 
                 // that we want a "shield up" attack as our punch attack wouldn't reach it.
-                return above ? OrientationState.ORIENTED_ABOVE : OrientationState.ORIENTED_FACE; 
+                return above ? OrientationState.ORIENTED_ABOVE : OrientationState.ORIENTED_FACE;
             }
 
             m_EnemyController.animator.SetFloat(hashTurnAngleParam, angle / 180.0f);
@@ -208,7 +257,7 @@ namespace Gamekit3D
 
         private void OnDrawGizmosSelected()
         {
-           playerScanner.EditorGizmo(transform);
+            playerScanner.EditorGizmo(transform);
         }
 
 #endif

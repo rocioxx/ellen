@@ -48,7 +48,7 @@ public class ScoreManager : MonoBehaviour
     }
 
     // Actualiza el texto de la UI
-    private void UpdateScoreText()
+    public void UpdateScoreText()
     {
         if (scoreText != null)
         {
